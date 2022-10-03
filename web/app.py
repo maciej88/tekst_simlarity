@@ -11,11 +11,29 @@ client = MongoClient("mongo://db:27017")
 db = client.SimlarityDB
 users = db["Users"]
 
-def UserExist(username):
+def user_exist(username):
     if users.find({"Username": username}).count() == 0:
         return False
     else:
         return True
+
+def verify_pw(username, password):
+    if not user_exist(username):
+        return False
+    hashed_pw = users.find({
+        "Username": username
+    })[0]["Password"]
+
+    if bcrypt.hashpw(password.encode('utf8'), hashed_pw) == hashed_pw:
+        return True
+    else:
+        return False
+
+def count_tokens(username):
+    tokens = users.find({
+        "Username": username
+    })[0]["Tokens"]
+    return tokens
 class Register(Resource):
     def post(self):
         postedData = request.get_json()
@@ -23,7 +41,7 @@ class Register(Resource):
         username = postedData["username"]
         password = postedData["password"]
 
-        if UserExist(username):
+        if user_exist(username):
             retJson = {
                 "status": 301,
                 "msg": "Invalid Username"
@@ -51,7 +69,7 @@ class Detect(Resource):
         text1 = postedData["text1"]
         text2 = postedData["text2"]
 
-        if UserExist(username):
+        if user_exist(username):
             retJson = {
                 "status": 301,
                 "msg": "invalid user"
