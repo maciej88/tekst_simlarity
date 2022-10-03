@@ -2,6 +2,7 @@ from flask import Flask, jsonyfy, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
 import bcrypt
+import spacy
 
 app = Flask(__name__)
 api = Api(app)
@@ -73,3 +74,20 @@ class Detect(Resource):
                 "msg": "no tokens"
             }
             return jsonyfy(retJson)
+
+        nlp = spacy.load("en_core_web_sm")
+
+        text1 = nlp(text1)
+        text2 = nlp(text2)
+
+        ratio = text1.similarity(text2)
+
+        retJson = {
+            "status": 200,
+            "similarity": ratio,
+            "msg": "Simlarity score calculated"
+        }
+
+        users.update({"Username": username}, {"$set":{"Tokens": num_tokens - 1}})
+
+        return jsonyfy(retJson)
