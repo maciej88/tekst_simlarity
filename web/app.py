@@ -10,6 +10,11 @@ client = MongoClient("mongo://db:27017")
 db = client.SimlarityDB
 users = db["Users"]
 
+def UserExist(username):
+    if users.find({"Username": username}).count() == 0
+        return False
+    else:
+        return True
 class Register(Resource):
     def post(self):
         postedData = request.get_json()
