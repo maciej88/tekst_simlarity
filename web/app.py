@@ -109,3 +109,39 @@ class Detect(Resource):
         users.update({"Username": username}, {"$set":{"Tokens": num_tokens - 1}})
 
         return jsonyfy(retJson)
+
+class Refill(Resource):
+    def post(self):
+        postedData = request.get_json()
+
+        username = postedData["username"]
+        password = postedData["admin_pw"]
+        refill_amount = postedData["refill"]
+
+        if not user_exist(username):
+            retJson = {
+                "status": 301,
+                "msg": "Invalid username"
+            }
+            return jsonyfy(retJson)
+
+        correct_pw = "abc123"
+        if not password == correct_pw:
+            retJson = {
+                "status": 303,
+                "msg": "you are not admin"
+            }
+            return jsonyfy(retJson)
+        current_tokens = count_tokens(username)
+        users.update_one({
+            "Username":username
+        },{
+            "$set":{
+                "Tokens": refill_amount
+            }
+        })
+        retJson = {
+            "status": 200,
+            "msg": "refiled tokens"
+        }
+        return jsonyfy(retJson)
