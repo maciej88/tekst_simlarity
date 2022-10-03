@@ -145,3 +145,7 @@ class Refill(Resource):
             "msg": "refiled tokens"
         }
         return jsonyfy(retJson)
+
+api.add_resource(Register, '/register')
+api.add_resource(Detect, '/detect')
+api.add_resource(Refill, '/refill')
