@@ -40,3 +40,36 @@ class Register(Resource):
             "msg": "Signed in!"
         }
         return jsonyfy(retJson)
+
+class Detect(Resource):
+    def post(self):
+        postedData = request.get_json()
+
+        username = postedData["username"]
+        password = postedData["password"]
+        text1 = postedData["text1"]
+        text2 = postedData["text2"]
+
+        if UserExist(username):
+            retJson = {
+                "status": 301,
+                "msg": "invalid user"
+            }
+            return jsonyfy(retJson)
+        correct_pw = verify_pw(username, password)
+
+        if not correct_pw:
+            retJson = {
+                "status": 302,
+                "msg": "invalid password"
+            }
+            return jsonyfy(retJson)
+
+        num_tokens = count_tokens(username)
+
+        if num_tokens <= 0:
+            retJson = {
+                "status": 303,
+                "msg": "no tokens"
+            }
+            return jsonyfy(retJson)
