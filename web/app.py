@@ -12,7 +12,7 @@ db = client.SimlarityDB
 users = db["Users"]
 
 def user_exist(username):
-    if users.find({"Username": username}).count_documents() == 0:
+    if users.count_documents({"Username": username}) == 0:
         return False
     else:
         return True
