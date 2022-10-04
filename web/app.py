@@ -69,7 +69,7 @@ class Detect(Resource):
         text1 = postedData["text1"]
         text2 = postedData["text2"]
 
-        if user_exist(username):
+        if not user_exist(username):
             retJson = {
                 "status": 301,
                 "msg": "invalid user"
