@@ -12,7 +12,7 @@ db = client.SimlarityDB
 users = db["Users"]
 
 def user_exist(username):
-    if users.find({"Username": username}).count() == 0:
+    if users.find({"Username": username}).count_documents() == 0:
         return False
     else:
         return True
@@ -49,7 +49,7 @@ class Register(Resource):
             return jsonyfy(retJson)
         hashed_pw = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
 
-        users.insert({
+        users.insert_one({
             "Username": username,
             "Password": hashed_pw,
             "Tokens": 6
@@ -106,7 +106,7 @@ class Detect(Resource):
             "msg": "Simlarity score calculated"
         }
 
-        users.update({"Username": username}, {"$set":{"Tokens": num_tokens - 1}})
+        users.update_one({"Username": username}, {"$set":{"Tokens": num_tokens - 1}})
 
         return jsonyfy(retJson)
 
