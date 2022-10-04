@@ -1,4 +1,4 @@
-from flask import Flask, jsonyfy, request
+from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
 import bcrypt
@@ -46,7 +46,7 @@ class Register(Resource):
                 "status": 301,
                 "msg": "Invalid Username"
             }
-            return jsonyfy(retJson)
+            return jsonify(retJson)
         hashed_pw = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
 
         users.insert_one({
@@ -58,7 +58,7 @@ class Register(Resource):
             "status": 200,
             "msg": "Signed in!"
         }
-        return jsonyfy(retJson)
+        return jsonify(retJson)
 
 class Detect(Resource):
     def post(self):
@@ -74,7 +74,7 @@ class Detect(Resource):
                 "status": 301,
                 "msg": "invalid user"
             }
-            return jsonyfy(retJson)
+            return jsonify(retJson)
         correct_pw = verify_pw(username, password)
 
         if not correct_pw:
@@ -82,7 +82,7 @@ class Detect(Resource):
                 "status": 302,
                 "msg": "invalid password"
             }
-            return jsonyfy(retJson)
+            return jsonify(retJson)
 
         num_tokens = count_tokens(username)
 
@@ -91,7 +91,7 @@ class Detect(Resource):
                 "status": 303,
                 "msg": "no tokens"
             }
-            return jsonyfy(retJson)
+            return jsonify(retJson)
 
         nlp = spacy.load("en_core_web_sm")
 
@@ -108,7 +108,7 @@ class Detect(Resource):
 
         users.update_one({"Username": username}, {"$set":{"Tokens": num_tokens - 1}})
 
-        return jsonyfy(retJson)
+        return jsonify(retJson)
 
 class Refill(Resource):
     def post(self):
@@ -123,7 +123,7 @@ class Refill(Resource):
                 "status": 301,
                 "msg": "Invalid username"
             }
-            return jsonyfy(retJson)
+            return jsonify(retJson)
 
         correct_pw = "abc123"
         if not password == correct_pw:
@@ -131,7 +131,7 @@ class Refill(Resource):
                 "status": 303,
                 "msg": "you are not admin"
             }
-            return jsonyfy(retJson)
+            return jsonify(retJson)
         current_tokens = count_tokens(username)
         users.update_one({
             "Username":username
@@ -144,7 +144,7 @@ class Refill(Resource):
             "status": 200,
             "msg": "refiled tokens"
         }
-        return jsonyfy(retJson)
+        return jsonify(retJson)
 
 api.add_resource(Register, '/register')
 api.add_resource(Detect, '/detect')
