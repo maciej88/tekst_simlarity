@@ -121,28 +121,30 @@ class Refill(Resource):
         if not user_exist(username):
             retJson = {
                 "status": 301,
-                "msg": "Invalid username"
+                "msg": "Invalid Username"
             }
             return jsonify(retJson)
 
         correct_pw = "abc123"
         if not password == correct_pw:
             retJson = {
-                "status": 303,
-                "msg": "you are not admin"
+                "status": 304,
+                "msg": "Invalid Admin Password"
             }
             return jsonify(retJson)
-        current_tokens = count_tokens(username)
+
+        # MAKE THE USER PAY!
         users.update_one({
-            "Username":username
-        },{
-            "$set":{
+            "Username": username
+        }, {
+            "$set": {
                 "Tokens": refill_amount
             }
         })
+
         retJson = {
             "status": 200,
-            "msg": "refiled tokens"
+            "msg": "Refilled successfully"
         }
         return jsonify(retJson)
 
